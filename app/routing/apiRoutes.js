@@ -8,12 +8,11 @@ module.exports = function (app) {
   });
 
   //handles incoming survey results
-  app.post("/api/tables", function (req, res) {
-    console.log("req body" + req.body);
+  app.post("/api/friends", function (req, res) {
+    console.log(res.body);
     friendField.push(req.body);
+    var incomingFriend = req.body;
 
-    //this code won't work bc i dont know what im doing but
-    var incomingFriend
     var compArray = [];
     var smallestDiff = 5;
     var diffIndex;
@@ -31,7 +30,8 @@ module.exports = function (app) {
       }
     }
 
-    var yourNewFriend = friendField[diffIndex] //idk how to do this
+    var yourNewFriend = friendField[diffIndex] 
+    console.log(yourNewFriend);
 
 
   });
