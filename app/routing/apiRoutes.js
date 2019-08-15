@@ -9,30 +9,27 @@ module.exports = function (app) {
 
   //handles incoming survey results
   app.post("/api/friends", function (req, res) {
-    console.log(res.body);
-    friendField.push(req.body);
     var incomingFriend = req.body;
-
-    var compArray = [];
-    var smallestDiff = 5;
+    var smallestDiff = 100;
     var diffIndex;
-    for (var eachFriend in friendField) {
-      var totalDiff;
-      for (i = 0; i < incomingFriend.scores.length; i++) {
-        totalDiff += Math.abs(friendField[eachFriend].scores[i] - incomingFriend.scores[i]);
+    //loops through each friend
+    for (var i = 0; i < friendField.length; i++) {
+      var currentDiff = 100;
+      //loops through that friend's scores
+      for (var j = 0; j < friendField[i].scores.length; j++) {
+        //gets the non-neg difference between existing and new response and adds to currentDiff
+        currentDiff += Math.abs(parseInt(friendField[i].scores[j]) - parseInt(incomingFriend[i].scores[j]));
+        if (currentDiff < smallestDiff) {
+          //keeps track of who has the smallest difference
+          smallestDiff = currentDiff;
+          diffIndex = i;
+        }
       }
-      compArray.push(totalDiff);
-    }
-    for (j = 0; j < compArray.length; j++) {
-      if (compArray[j] < smallestDiff) {
-        smallestDiff = compArray[j]
-        diffIndex = j;
-      }
     }
 
-    var yourNewFriend = friendField[diffIndex] 
-    console.log(yourNewFriend);
+    friendField.push(incomingFriend);
 
-
+    var yourNewFriend = friendField[diffIndex]
+    console.log("your new friend is " + yourNewFriend.name);
   });
 }
