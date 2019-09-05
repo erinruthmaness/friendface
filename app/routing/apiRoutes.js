@@ -9,27 +9,40 @@ module.exports = function (app) {
 
   //handles incoming survey results
   app.post("/api/friends", function (req, res) {
-    var incomingFriend = req.body;
-    var smallestDiff = 100;
-    var diffIndex;
+    let incomingFriend = req.body;
+    let yourNewFriend = { name: "??" };
+    let smallestDiff = 100;
+    let currentDiff = 100;
     //loops through each friend
-    for (var i = 0; i < friendField.length; i++) {
-      var currentDiff = 100;
+    for (let i = 0; i < friendField.length; i++) {
       //loops through that friend's scores
-      for (var j = 0; j < friendField[i].scores.length; j++) {
+      for (let j = 0; j < friendField[i].scores.length; j++) {
         //gets the non-neg difference between existing and new response and adds to currentDiff
-        currentDiff += Math.abs(parseInt(friendField[i].scores[j]) - parseInt(incomingFriend[i].scores[j]));
-        if (currentDiff < smallestDiff) {
-          //keeps track of who has the smallest difference
-          smallestDiff = currentDiff;
-          diffIndex = i;
+        let friendScore = friendField[i].scores[j];
+        let yourScore = incomingFriend.scores[j];
+        //resets currentDiff to the sum difference on each friend's first score
+        if (j === 0) {
+          currentDiff = Math.abs(parseInt(friendScore) - parseInt(yourScore));
+          console.log("checking for " + friendField[i].name);
+        }
+        //adds subsequent score differences to currentDiff
+        else {
+          currentDiff += Math.abs(parseInt(friendScore) - parseInt(yourScore));
         }
       }
+      if (currentDiff < smallestDiff) {
+        smallestDiff = currentDiff;
+        yourNewFriend.name = friendField[i].name;
+        yourNewFriend.photo = friendField[i].photo;
+      }
+      else {
+        console.log(friendField[i].name + " was not as good a match as " + yourNewFriend.name);
+      }
     }
-
+    //adds you to the array
     friendField.push(incomingFriend);
-
-    var yourNewFriend = friendField[diffIndex]
-    console.log("your new friend is " + yourNewFriend.name);
+    //and returns your best match from the array
+    console.log(yourNewFriend.name);
+    res.json(yourNewFriend);
   });
 }
